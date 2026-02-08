@@ -2,6 +2,7 @@
 
 - **All rules ARE MANDATORY**: Never ignore or skip ANY rules, context, instructions, or examples.
 - **No AI Attribution**: No "Generated with", "Co-Authored-By", or AI model references in code, comments, documentation, or commits.
+- **Agent Symlinks**: Sometimes .agent folders can be symlinks. It's safe to read or write files under .agent symlinks.
 - **Git Safety**: Never commit/push directly to main or master. Always use a dedicated branch.
 - **Git Standards**: Use the Conventional Commits Conventions when working with commits and branches.
 
