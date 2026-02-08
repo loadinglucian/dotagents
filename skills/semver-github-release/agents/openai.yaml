@@ -1,0 +1,3 @@
+interface:
+  display_name: "Semver GitHub Release"
+  short_description: "Automate semver changelog and release"

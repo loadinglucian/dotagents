@@ -1,0 +1,3 @@
+interface:
+  display_name: "PHP Laravel Livewire Pest Standards"
+  short_description: "Enforce PHP, Livewire, and Pest conventions"
