@@ -15,7 +15,7 @@ Rules for writing DeployerPHP user documentation.
 - **Explain what commands do, not what they output**: Describe the prompts, steps, and outcomes in prose rather than showing verbose terminal output or tables of parameter options.
 - **Keep it scannable**: Use bullet lists for prompts, numbered lists for sequential steps.
 - **TOC required**: Every documentation file must include a Table of Contents at the top, wrapped in `<!-- toc -->` and `<!-- /toc -->` HTML comment delimiters. List all H2 sections as links using kebab-case anchors.
-- **Allowed callouts**: Use only `[!INFO]` and `[!IMPORTANT]` callouts in docs.
+- **Allowed callouts**: Use only `[!NOTE]` and `[!IMPORTANT]` callouts in docs.
 - **Callout sequencing**: Do not place two callouts of the same type consecutively. Alternate types when two adjacent callouts are needed.
 
 ### Example: TOC Structure
