@@ -1,6 +1,6 @@
 ---
-name: prompting-rules
-description: Write and review AI-related documentation with proven prompt-engineering patterns for structure, information order, examples, protocols, standards, and constraints. Use when creating or editing prompt docs, AGENTS.md guidance, SKILL.md files, command docs, or agent playbooks.
+name: ai-prompting
+description: Write and review AI-related prompts and documentation with proven prompt-engineering patterns for structure, information order, examples, protocols, standards, and constraints. Use this when creating or editing AI agent prompt files such as AGENTS.md, CLAUDE.md, SKILL.md, AI references, etc.
 ---
 
 # Prompting Rules Skill
@@ -17,6 +17,7 @@ For complete patterns and templates, read `references/prompting-reference.md`.
 ### Step 1: Classify the document type
 
 Determine which artifact is being written:
+
 - Generic prompt documentation
 - Agent instructions
 - Command instructions
@@ -27,6 +28,7 @@ Determine which artifact is being written:
 
 Use semantic headers and stable section names.
 Prefer:
+
 - `## Context`
 - `## Instructions`
 - `## Examples`
@@ -38,6 +40,7 @@ Prefer:
 ### Step 3: Order information for execution quality
 
 Place content in this order:
+
 1. Context and background
 2. Source documents/data
 3. Examples
@@ -47,6 +50,7 @@ Place content in this order:
 ### Step 4: Add examples and protocol
 
 For complex tasks, include:
+
 - 3-5 diverse examples
 - Numbered protocol steps (`### Step N: ...`)
 - A required output format or report template in a fenced block
@@ -54,12 +58,14 @@ For complex tasks, include:
 ### Step 5: Add quality bars and guardrails
 
 End docs with:
+
 - `## Standards` for quality expectations
 - `## Constraints` for hard limits and disallowed behavior
 
 ### Step 6: Run the quality gate
 
 Verify:
+
 - Section semantics and consistency
 - Information ordering
 - Example diversity/relevance
@@ -83,6 +89,7 @@ Use the report templates in `references/prompting-reference.md` to capture PASS/
 ## Output Requirements
 
 When producing documentation with this skill:
+
 1. Deliver the updated document content.
 2. Include a short verification report with PASS/FAIL checks.
 3. Call out any deliberate deviations from the rules.
