@@ -1,3 +1,0 @@
-interface:
-  display_name: "Git Branch PR Workflow"
-  short_description: "Run commit/push/sync/ship git workflows"
