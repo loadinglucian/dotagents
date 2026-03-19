@@ -1,26 +1,62 @@
----
-name: pest
-description: "Write and review Pest PHP tests using it() syntax, AAA structure, behavior-focused assertions, and project testing conventions. Use when working in `tests/**/*.php`."
----
+# PHP Development Reference
 
-# PEST Testing RULES
+Load this reference when the task needs the exact compatibility examples and detailed pattern snippets inherited from the original `php` and `pest` skills.
 
-## Context
+## PHP Examples
 
-Tests verify behavior using Pest PHP `it()` syntax. AAA pattern. Business logic over type checking.
+### Example: Yoda Conditions (Correct)
 
-**Philosophy:** "A test that never fails is not a test, it's a lie."
-
-**Coverage:** 70%+ minimum.
-
-**Commands:**
-
-```bash
-composer pest                 # Full suite with coverage (parallel)
-vendor/bin/pest $TEST_FILE    # Specific file
+```php
+if (null === $value) { ... }
+if ('' === trim($name)) { ... }
+if (0 === count($items)) { ... }
 ```
 
-## Examples
+### Example: Yoda Conditions (Wrong)
+
+```php
+if ($value === null) { ... }  // constant should be on LEFT
+if (trim($name) === '') { ... }  // literal should be on LEFT
+```
+
+### Example: Two Variables
+
+```php
+// Two variables - Yoda doesn't apply
+if ($typedName !== $server->name) { ... }
+```
+
+### Example: PHPStan Annotation (Correct)
+
+```php
+/** @var string $apiToken */
+$apiToken = $this->env->get(['API_TOKEN']);
+```
+
+### Example: PHPStan Annotation (Wrong)
+
+```php
+assert(is_string($apiToken));  // don't use assert() in production
+```
+
+### Example: Comment Structure
+
+```php
+// ----
+// Section Header (h1)
+// ----
+
+//
+// Subsection (h2)
+// ----
+
+//
+// Minor heading (h3)
+
+// Regular comment (p)
+```
+
+## Pest Examples
 
 ### Example: File Structure
 
@@ -50,22 +86,6 @@ it('throws when invalid input', function () {
     // ACT & ASSERT
     expect(fn () => $service->action('invalid'))
         ->toThrow(InvalidArgumentException::class, 'Expected message');
-});
-```
-
-### Example: AAA Pattern
-
-```php
-it('calculates total with tax', function () {
-    // ARRANGE
-    $calculator = new PriceCalculator(taxRate: 0.1);
-    $items = [['price' => 100], ['price' => 50]];
-
-    // ACT
-    $total = $calculator->calculateTotal($items);
-
-    // ASSERT
-    expect($total)->toBe(165.0);
 });
 ```
 
@@ -125,7 +145,7 @@ it('adds server successfully', function () {
 });
 ```
 
-### Example: Datasets
+### Example: Dataset-Driven Scenarios
 
 ```php
 it('validates server names', function (string $name, bool $valid) {
@@ -194,36 +214,7 @@ arch('services are final', function () {
 });
 ```
 
-## Instructions
-
-### AAA Pattern
-
-- Every test follows Arrange-Act-Assert
-- Use `// ARRANGE`, `// ACT`, `// ASSERT` comments
-- Exception tests: use `// ACT & ASSERT` when act triggers assertion
-
-### Test Naming
-
-- Use descriptive `it()` statements that read as sentences
-- Describe behavior, not implementation
-
-### Dependency Injection
-
-DI rules apply to PRODUCTION code, not tests.
-
-- **Unit tests:** Manual instantiation with mocks
-- **Command tests:** Container with mock bindings via `mockCommandContainer()`
-
-### Minimalism
-
-**Target:** Test files under 1.8x source code size.
-
-- Test core business logic only
-- Use datasets for multiple scenarios: `->with([])`
-- Eliminate overlap: no two tests covering same functionality
-- Consolidate assertions: `expect($x)->toBe(1)->and($y)->toBe(2)`
-- Mock external dependencies only
-- **Don't consolidate:** Different public methods, exception vs normal flow, distinct business logic
+## Pattern Snippets
 
 ### Forbidden Patterns
 
@@ -267,38 +258,4 @@ $mock->shouldReceive('method')->never();
 $mock->shouldReceive('method')->with('exact');
 $mock->shouldReceive('method')->with(Mockery::any());
 $mock->shouldReceive('method')->with(Mockery::type('string'));
-```
-
-### Test Types
-
-| Layer             | Test Type   |
-| ----------------- | ----------- |
-| CLI Commands      | Integration |
-| Business Services | Unit        |
-| Utilities/Helpers | Unit        |
-
-### Organization
-
-- Use section comments: `// {Section} tests // ----`
-- File naming: `tests/Unit/ServiceNameTest.php` or `tests/Integration/FeatureTest.php`
-- Mirror source structure where practical
-
-### Static Analysis
-
-PHPStan applies to PRODUCTION code, not tests. Focus on functionality over type compliance.
-
-## Quality Gate
-
-After writing or editing tests:
-
-```
-**AAA Pattern:** PASS | FAIL
-**Descriptive Names:** PASS | FAIL
-**No Forbidden Assertions:** PASS | FAIL
-**Datasets for Scenarios:** PASS | FAIL | N/A
-**Value Assertions (not type-only):** PASS | FAIL
-**Mock Interactions Verified:** PASS | FAIL | N/A
-**No Test Overlap:** PASS | FAIL
-
-**Proceeding with:** [run tests] | **Blocked by:** [issue to fix]
 ```
