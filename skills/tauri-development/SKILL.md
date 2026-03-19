@@ -34,7 +34,6 @@ Do not use this skill when:
 > - **No unsafe-eval in CSP**: Enables arbitrary code execution in the webview.
 > - **All frontend data is untrusted**: Sanitize before use in shell commands, file paths, SQL, and HTML.
 > - **Prefer official plugins first**: Reach for a Tauri plugin before a custom command when the capability already exists and does not violate project constraints.
-> - **Read before write**: Read 2+ existing files of the same type before creating a new one.
 
 ### Stack Assumptions
 
@@ -90,7 +89,7 @@ Found `workspaces.rs` as reference. I'll create `projects.rs` following the same
 
 ### Step 1: Discover
 
-Read at least 2 existing files of the same type (command, service, component, hook) before creating a new one. Match import order and grouping, error handling pattern, return type wrapping, and naming conventions.
+Match import order and grouping, error handling pattern, return type wrapping, and naming conventions from existing files of the same type.
 
 ### Step 2: Plan
 
@@ -321,7 +320,6 @@ let output = std::process::Command::new("ls")
 - Generate a correlation UUID per frontend action and pass through IPC as a parameter. Log it as a span field for end-to-end tracing.
 - Track command latency (P50/P95) and payload size in spans.
 - Gate verbose spans behind `#[cfg(debug_assertions)]` or dynamic log level checks to prevent I/O bottlenecks in production.
-- Profile before and after optimizations; avoid speculative tuning.
 
 ### Performance & Concurrency
 
@@ -545,9 +543,6 @@ export const WorkspaceSchema = z.object({
 
 ### Code Documentation
 
-- Write comments for intent, constraints, invariants, or non-obvious tradeoffs — not narration.
-- Remove or update comments whenever related code changes or is deleted.
-- Refactor unclear code instead of adding explanatory comments.
 - **Rust**: use `///` for all public items (include `# Errors`, `# Panics`, `# Safety` sections when applicable). Use `//!` at top of modules to explain why the module exists. Add `// SAFETY:` before every `unsafe` block. Use `//` for inline comments on non-obvious intent only.
 - **TypeScript**: use `/** */` for all exported functions, components, hooks, types, and Zod schemas. Include `@param`, `@returns`, `@throws`, `@example` tags where they add clarity. Section comments are for visual grouping only — JSDoc takes priority for API documentation.
 - **Section comments** (same format in both Rust and TypeScript):
@@ -573,9 +568,9 @@ export const WorkspaceSchema = z.object({
 
 ### Testing Policy
 
-Use risk-based testing. Optimize for defect detection, not test count. Test behavior that can break users, data integrity, security, or release safety. Do not test framework internals, trivial pass-through wrappers, or static markup with no logic. Every test should map to a named risk.
+Apply the repo-level testing principles from `AGENTS.md`, then choose from the Tauri-specific layers below when tests are explicitly in scope.
 
-**Required test mix:**
+**Tauri-specific test layers:**
 
 - Rust unit tests: domain logic, invariants, parsers, error mapping.
 - Rust command integration tests: critical commands with happy + failure path.
@@ -584,20 +579,6 @@ Use risk-based testing. Optimize for defect detection, not test count. Test beha
 - Zod schema tests: validate schemas match actual backend response shapes (catches drift).
 - E2E tests: only top user journeys and one failure-recovery journey per critical feature.
 - Cross-platform smoke: app starts and primary flow works on macOS/Linux/Windows.
-
-**Anti-theater guardrails:**
-
-- Coverage is a secondary metric; do not chase arbitrary percentages.
-- Prefer focused assertions over snapshots. Delete tests that no longer protect meaningful risk.
-- Fix or remove flaky tests immediately; do not normalize retries as success.
-- Required coverage: critical paths (authentication, data persistence, state machine transitions, error mapping). Optional: UI rendering, config loading, simple CRUD pass-throughs. Use coverage reports to find untested critical paths, not to chase percentages.
-
-**Per-feature test protocol:**
-
-- One short risk list (`data-loss`, `security`, `workflow-break`, `perf-regression`).
-- Minimum tests that prove those risks are controlled.
-- One explicit statement of what is intentionally not tested and why.
-- Stop when highest risks are covered with deterministic, maintainable tests.
 
 ### Dev Commands
 
@@ -628,7 +609,6 @@ Use risk-based testing. Optimize for defect detection, not test count. Test beha
 
 ## Standards
 
-- Read 2+ existing files of the same type before creating new ones — match structure exactly
 - Commands are thin IPC wrappers with no business logic; services hold domain logic
 - All IPC responses validated by Zod schemas via `invokeCommand`
 - State machine transitions validated in services, not command handlers
@@ -636,7 +616,6 @@ Use risk-based testing. Optimize for defect detection, not test count. Test beha
 - Frontend organized by feature domain; features never import from each other (except `import type`)
 - Server state in TanStack Query, client state in Zustand — never mix
 - Prefer official Tauri plugins before custom Rust commands for common desktop tasks (settings persistence, window state, native dialogs, logging, secret storage). Use custom implementation only when no plugin covers the requirement, the plugin cannot meet a hard security/performance requirement, or a custom flow is required and the reason is documented
-- Risk-based testing: every test maps to a named risk (data-loss, security, workflow-break, perf-regression)
 - Document state machine transition tables in service module rustdoc
 - Every public service method documents its `# Errors` section in rustdoc
 - IPC contracts defined by the feature's `api/index.ts` — its signatures and return types are the handoff point
@@ -655,13 +634,7 @@ Use risk-based testing. Optimize for defect detection, not test count. Test beha
 - Never create `.js`/`.jsx` files — all frontend code is TypeScript
 - Never store server data in Zustand — use TanStack Query
 - Never use `as` type assertions to bypass Zod validation — use `schema.parse()`
-- Never duplicate type definitions — define once in canonical location
 - Components never call `invoke()` directly — use feature API modules
-- Never over-abstract: three similar lines are better than a premature abstraction
-- Never create separate files for single-use types or tiny helpers
-- Never mix naming conventions across files (e.g., `getWorkspaces` in one feature, `fetchProjects` in another)
-- Never add caching, memoization, or batching before measuring a performance problem
-- Never swallow errors silently — every caught error is re-thrown, returned as typed error, or logged with context
 - Use `HashRouter`, not `BrowserRouter`
 - Use `tauri::async_runtime::spawn()`, not `tokio::spawn()`
 - No excessive `.clone()` instead of borrowing in hot paths
@@ -675,5 +648,4 @@ Use risk-based testing. Optimize for defect detection, not test count. Test beha
 - No mixing data fetching with presentational rendering
 - No ignoring loading/error states for async operations
 - No inconsistent error shapes across backend and frontend
-- No testing only the happy path — model failure modes explicitly
 - No hardcoding paths — use platform-appropriate path APIs

@@ -163,18 +163,15 @@ it('hydrates the server from API data', function () {
 
 ### Production Code
 
-1. Match the existing file structure and execution order before introducing changes.
-2. Add `declare(strict_types=1);` to every PHP file.
-3. Use PSR-12 formatting, explicit return types, and `use` statements for vendor imports.
-4. Use Yoda conditions for literal and constant comparisons, but keep normal comparisons for two variables.
-5. Use PHP 8.x features when they match the surrounding codebase and improve clarity.
-6. Add relevant docblocks for classes, functions, and modules; keep them brief and non-obvious.
-7. Parameters and return tags belong in docblocks only when they are not inferable from the signature.
-8. Use `@var` annotations for PHPStan when inference is insufficient. Do not use `assert()` in production code.
-9. Prefer Symfony utilities such as `Filesystem` and `Process` when they replace native PHP with more testable abstractions.
-10. Separate sections visually using the documented comment structure when the local pattern uses it.
-11. Remove comments that only narrate obvious code.
-12. Remove comments when removing code.
+1. Add `declare(strict_types=1);` to every PHP file.
+2. Use PSR-12 formatting, explicit return types, and `use` statements for vendor imports.
+3. Use Yoda conditions for literal and constant comparisons, but keep normal comparisons for two variables.
+4. Use PHP 8.x features when they match the surrounding codebase and improve clarity.
+5. Add relevant docblocks for classes, functions, and modules.
+6. Parameters and return tags belong in docblocks only when they are not inferable from the signature.
+7. Use `@var` annotations for PHPStan when inference is insufficient. Do not use `assert()` in production code.
+8. Prefer Symfony utilities such as `Filesystem` and `Process` when they replace native PHP with more testable abstractions.
+9. Separate sections visually using the documented comment structure when the local pattern uses it.
 
 ### Imports
 
@@ -183,17 +180,16 @@ it('hydrates the server from API data', function () {
 
 ### DocBlocks
 
-- Keep descriptions minimalist.
 - Add parameters and return types only when they are not inferable from the signature.
 - Use `@var` annotations for PHPStan, not `assert()` in production code.
 
 ### Comments
 
 - Separate sections visually using the structure shown in the examples.
-- No obvious comments. If code needs explanation, refactor it.
-- Remove comments when removing code.
 
 ### Pest Tests
+
+Apply the repo-level testing principles from `AGENTS.md`, then use the Pest-specific rules below.
 
 1. Use Pest `it()` syntax with names that read like behavior.
 2. Describe behavior, not implementation.
@@ -201,15 +197,9 @@ it('hydrates the server from API data', function () {
 4. Dependency injection rules apply to production code, not tests.
 5. Prefer manual instantiation with mocks for unit tests.
 6. Use `mockCommandContainer()` for command tests that need container bindings.
-7. Cover core business behavior, not implementation trivia or type-only facts.
-8. Use datasets when one behavior has multiple input permutations.
-9. Eliminate overlap so no two tests cover the same functionality.
-10. Consolidate related assertions with chaining when they describe one outcome.
-11. Do not consolidate distinct public methods, exception versus normal flow, or distinct business logic into one test.
-12. Mock external dependencies only.
-13. Verify the interaction that matters.
-14. Use zero polling intervals in timeout-based tests to keep them deterministic.
-15. Mirror the source structure where practical, using paths such as `tests/Unit/ServiceNameTest.php` and `tests/Integration/FeatureTest.php`.
+7. Consolidate related assertions with chaining when they describe one outcome.
+8. Do not consolidate distinct public methods, exception versus normal flow, or distinct business logic into one test.
+9. Mirror the source structure where practical, using paths such as `tests/Unit/ServiceNameTest.php` and `tests/Integration/FeatureTest.php`.
 
 ### Forbidden Patterns
 
@@ -219,7 +209,6 @@ Do not write production code that:
 - Places variables on the left side of literal comparisons
 - Uses `assert()` instead of PHPStan-friendly annotations
 - Reaches for native PHP helpers when an established Symfony abstraction is the project default
-- Writes obvious comments
 
 Do not write Pest tests that:
 
@@ -260,18 +249,11 @@ Decide whether the work touches:
 
 Apply only the sections that fit, but keep this file as the governing skill.
 
-### Step 2: Match Local Structure
+### Step 2: Apply the Relevant Sections
 
-Before editing, mirror the surrounding file's execution order, naming, and abstractions.
+Apply the PHP or Pest sections that match the edited paths, while keeping this file as the governing stack-specific skill.
 
-### Step 3: Write the Smallest Correct Change
-
-- Keep production code minimal and explicit
-- Cache computed values instead of recomputing them
-- Avoid single-use helper methods unless they remove real complexity
-- Keep tests focused on the public behavior that changed
-
-### Step 4: Verify the Result
+### Step 3: Verify the Result
 
 Use the report below to confirm the edited paths still satisfy the skill.
 
@@ -315,11 +297,9 @@ After writing or editing PHP or Pest files, evaluate the relevant rows:
 
 - Never split PHP and Pest rules across multiple source-of-truth skills
 - Never recreate legacy `php` or `pest` skills beside this one
-- Never run tests by default when local instructions forbid it
 - Never use `assert()` in production code
 - Never omit braces from control structures
 - Never place variables on the left side of literal comparisons
 - Never use native PHP functions when Symfony equivalents exist
-- Never write obvious comments
 - Never use vague guidance such as "follow best practices"
 - Never bury the trigger boundary only in the body; keep it clear in `description`
