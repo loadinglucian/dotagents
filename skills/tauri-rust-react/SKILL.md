@@ -1,8 +1,6 @@
 ---
 name: tauri-rust-react
 description: Build Tauri v2 desktop apps with Rust backend and React/TypeScript frontend. Covers architecture, typed IPC, state machines, security, and conventions. Use when asked to "build desktop app", "create Tauri project", "add Tauri command", "add IPC command", "create Rust service", or "add React feature".
-user-invocable: /tauri
-model: inherit
 ---
 
 # Tauri + Rust + React Skill
@@ -42,6 +40,7 @@ Use this skill when building or evolving a Tauri v2 desktop app with a Rust back
 **assistant:** "Reading existing commands in `src-tauri/src/commands/` to match patterns...
 
 Found `workspaces.rs` as reference. I'll create `projects.rs` following the same structure:
+
 1. Thin command handler calling `project_service.list()`
 2. Plugin registration via `init()` returning `TauriPlugin`
 3. Frontend API wrapper in `features/projects/api/index.ts` with Zod validation
@@ -52,6 +51,7 @@ Found `workspaces.rs` as reference. I'll create `projects.rs` following the same
 **user:** "The download feature needs states: idle, downloading, paused, complete, failed"
 
 **assistant:** "I'll model this as a tagged enum in Rust with a matching TypeScript discriminated union:
+
 1. `DownloadState` enum in `src-tauri/src/models/download.rs` with `#[serde(tag = \"state\")]`
 2. Matching TS type in `features/downloads/types.ts`
 3. Transition validation in `download_service.rs` (not the command handler)
@@ -62,6 +62,7 @@ Found `workspaces.rs` as reference. I'll create `projects.rs` following the same
 **user:** "The open-folder command takes a path from the frontend"
 
 **assistant:** "Frontend paths are untrusted. I'll add input validation:
+
 1. Canonicalize with `std::fs::canonicalize()`
 2. Verify the resolved path starts with an allowed root directory
 3. Use `Command::new(binary).arg(path)` — never interpolate into shell strings

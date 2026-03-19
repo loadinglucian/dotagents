@@ -1,3 +1,0 @@
-interface:
-  display_name: "GitHub PR Operations"
-  short_description: "Analyze CI and triage PR comments"

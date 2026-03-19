@@ -1,3 +1,0 @@
-interface:
-  display_name: "Polyglot Linting"
-  short_description: "Run repo-native lint and format checks"
