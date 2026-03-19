@@ -1,13 +1,30 @@
 ---
-name: tauri-rust-react
-description: Build Tauri v2 desktop apps with Rust backend and React/TypeScript frontend. Covers architecture, typed IPC, state machines, security, and conventions. Use when asked to "build desktop app", "create Tauri project", "add Tauri command", "add IPC command", "create Rust service", or "add React feature".
+name: tauri-development
+description: "Design, build, and evolve Tauri v2 desktop apps with Rust backend services and React/TypeScript frontends. Use when the user wants to create a Tauri app, add or refactor commands, shape IPC contracts, build desktop features that span Rust and React, or harden Tauri security, state, and performance behavior. Do not use for Electron apps, standalone React web apps, or Tauri projects with a non-React frontend stack."
 ---
 
-# Tauri + Rust + React Skill
+# Tauri Development Rules
 
-## When to Use This Skill
+Rules for building and evolving Tauri v2 desktop applications with a Rust backend and a React + TypeScript frontend.
 
-Use this skill when building or evolving a Tauri v2 desktop app with a Rust backend and a React + TypeScript frontend. It captures the stack requirements, architecture patterns, IPC/type-sharing approach, and conventions for reliable cross-platform apps.
+## Context
+
+### Scope
+
+Use this skill when the work involves:
+
+- Creating or restructuring a Tauri v2 app that pairs Rust backend code with a React + TypeScript desktop UI
+- Adding or refactoring Tauri commands, plugins, services, repositories, models, or platform adapters
+- Designing IPC contracts, Zod validation, invoke wrappers, channels, or event flows between Rust and React
+- Building or debugging desktop features that cross the backend/frontend boundary
+- Hardening Tauri-specific security, state handling, observability, or performance behavior
+
+Do not use this skill when:
+
+- The app is Electron-based or a browser-only React application
+- The work is Rust-only and unrelated to Tauri app structure or IPC
+- The Tauri frontend uses Vue, Svelte, or another non-React stack with its own repo conventions
+- The task is docs-only or generic UI styling with no Tauri-specific constraints
 
 > **IMPORTANT**
 >
@@ -16,9 +33,10 @@ Use this skill when building or evolving a Tauri v2 desktop app with a Rust back
 > - **No unwrap in commands/services**: Use `?` or explicit error handling.
 > - **No unsafe-eval in CSP**: Enables arbitrary code execution in the webview.
 > - **All frontend data is untrusted**: Sanitize before use in shell commands, file paths, SQL, and HTML.
+> - **Prefer official plugins first**: Reach for a Tauri plugin before a custom command when the capability already exists and does not violate project constraints.
 > - **Read before write**: Read 2+ existing files of the same type before creating a new one.
 
-## Stack Requirements
+### Stack Assumptions
 
 - Tauri v2 app shell with a Rust backend for system-level operations and IPC.
 - Bun as the JavaScript package manager/dev server for the React frontend.
@@ -76,7 +94,7 @@ Read at least 2 existing files of the same type (command, service, component, ho
 
 ### Step 2: Plan
 
-Identify the target layer (command/service/repository/model/platform for Rust; feature/shared for React). Determine which existing patterns apply. Output an understanding report before writing code.
+Name the target layer (command/service/repository/model/platform for Rust; feature/shared for React), the existing files you are matching, and whether the change crosses the Rust/frontend boundary before writing code.
 
 ### Step 3: Implement
 
