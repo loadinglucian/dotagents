@@ -41,10 +41,10 @@ Never take ANY action that could reveal credentials or secrets.
 
 ## Code Philosophy
 
-- **Minimalism:** Write minimum code necessary. Eliminate single-use methods. Cache computed values.
+- **Minimalism:** Write minimum code necessary. Eliminate single-use methods. Reuse already-computed values within a flow.
 - **Organization:** Group related functions into comment-separated sections. Order alphabetically after grouping.
 - **Consistency:** Same style throughout. Code should appear written by a single person.
-- **Docstrings:** Each function, class, or module must include a relevant docstring comment.
+- **Docstrings:** Each function, class, or module must include a brief relevant docstring comment.
 
 ### Consistency Patterns
 
@@ -57,10 +57,36 @@ Look for and match existing patterns such as command, service, action, trait, an
 
 **Consistency means structure, not just features.** To match a pattern, replicate HOW it works, not just WHAT it does.
 
-### Test Separately
+### Engineering Defaults
 
-- Don't run, create, or update tests UNLESS explicitly instructed
-- Tests have enough complexity that they deserve dedicated attention and consideration
+- Read at least 2 existing files of the same type before creating a new file, module, or structure
+- Write the smallest correct change and avoid speculative refactors
+- Never over-abstract: three similar lines are better than a premature abstraction
+- Never create separate files for single-use types, helpers, or tiny wrappers
+- Prefer established project abstractions or official integrations before inventing custom infrastructure
+- Keep boundary layers thin: handlers, commands, adapters, hooks, and components validate inputs and delegate business logic
+- Treat external input as untrusted and validate it at the boundary before it reaches shell commands, file paths, SQL, HTML, or persistence sinks
+- Never swallow errors silently; every caught error must be re-thrown, returned, or logged with context
+- Define shared contracts and types once in a canonical location to avoid near-duplicate definitions and drift
+- Keep dependencies explicit and avoid hidden global state when a local dependency can be passed directly
+- Measure before optimizing; do not add caching, batching, memoization, or concurrency complexity without evidence
+
+### Comments and Documentation
+
+- Docstrings should explain intent, constraints, invariants, or non-obvious tradeoffs
+- Never write comments that only narrate obvious code; refactor unclear code instead
+- Remove or update comments whenever the related code changes or is deleted
+
+### Testing Principles
+
+- Use risk-based testing: choose the smallest set of tests that covers the user-facing, data, security, or release risks introduced by the change
+- Optimize for defect detection, not test count
+- Tests should cover meaningful failure paths, not only happy paths
+- Test observable behavior and named risks instead of implementation trivia or framework internals
+- Keep tests deterministic: avoid sleeps, real-time waiting, flaky retries, and uncontrolled polling
+- Prefer data-driven tests when one behavior has multiple meaningful input permutations
+- Eliminate overlapping tests that cover the same behavior without adding signal
+- Mock only external boundaries and verify only the interactions that matter
 
 ### After Modifying Code
 
