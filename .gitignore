@@ -1,6 +1,0 @@
-# Keep the repository-local Codex `/git` prompt versioned even when `.codex/` is globally ignored.
-!.codex/
-.codex/*
-!.codex/prompts/
-.codex/prompts/*
-!.codex/prompts/git.md

@@ -1,0 +1,5 @@
+interface:
+  display_name: "git-ops"
+  short_description: "Handles GitHub and GitLab PR/MR and release operations for a selected git remote, including detection, creation, merge, and publish flows."
+policy:
+  allow_implicit_invocation: false
