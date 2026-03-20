@@ -88,6 +88,26 @@ Look for and match existing patterns such as command, service, action, trait, an
 - Eliminate overlapping tests that cover the same behavior without adding signal
 - Mock only external boundaries and verify only the interactions that matter
 
+### Before Running JavaScript/TypeScript
+
+Detect the package manager from lock files before running any JS/TS commands.
+
+Detection order:
+
+1. `bun.lockb` or `bun.lock` → `bun`
+2. `pnpm-lock.yaml` → `pnpm`
+3. `yarn.lock` → `yarn`
+4. `package-lock.json` → `npm`
+5. No lock file → `bun` (default)
+
+Use detected package manager for:
+
+- Installing packages
+- Running scripts
+- Adding/removing dependencies
+- Building and dev servers
+- Executing one-off packages (dlx/npx/bunx)
+
 ### After Modifying Code
 
 Run linters if available in the project:
