@@ -14,7 +14,8 @@ Use this skill when a prompt needs canonical review remote selection, default-br
 > - Support preview-first workflows by resolving remotes, base branches, and existing review or release artifacts before approval, and only performing create or merge actions after the caller confirms.
 > - Never push the resolved default branch directly.
 > - Never force push.
-> - Never fall back to `--admin`, `--web`, or provider-specific autofill flows that change behavior unexpectedly.
+> - Never use `--web` or provider-specific autofill flows that change behavior unexpectedly.
+> - Never use admin-style merge bypass flags unless the caller explicitly approved that merge mode.
 
 ## Context
 
@@ -26,6 +27,7 @@ The calling prompt should provide:
 - The desired action: resolve default branch, open review, merge review, or publish release
 - The target remote when the caller has already resolved the canonical review or release remote
 - The source remote when the review branch lives on a different remote than the review target
+- The merge mode for review merges: `standard` or `admin-bypass`
 - A title and body when creating a new review request
 - A tag, release title, and notes file when creating a release
 
@@ -38,7 +40,9 @@ This skill should return a normalized result containing:
 - Branch when the action is review-related
 - Base branch when the action is review-related
 - Tag when the action is release-related
+- Merge mode for review merges: `standard` or `admin-bypass`
 - Status: `Existing`, `Created`, `Merged`, or `Blocked`
+- Blocker when `Status` is `Blocked`
 - URL
 - Identifier when available
 
@@ -117,18 +121,24 @@ Do not use `gh pr create --fill`, `glab mr create --fill`, `--web`, or flags tha
 Use this flow when the caller wants to merge an existing review request for the current branch.
 
 - Reuse the current branch's open review request when possible.
-- Use squash merges by default.
+- Default to `standard` merge mode unless the caller explicitly approved `admin-bypass`.
+- Use squash merges in both merge modes.
 - Remove the source branch when the provider supports it.
+- If checks, approvals, branch protections, or merge queue rules block a `standard` merge, stop and report `Status: Blocked` with a blocker that says admin-bypass approval is required.
+- If the caller approved `admin-bypass`, only use a provider CLI's documented elevated merge flag for that provider. If the provider CLI does not support an elevated merge flag, stop and report `Status: Blocked` with a blocker that says the approved merge mode is unsupported for that provider.
+- If the provider CLI reports that the current credentials do not have permission to use the approved merge mode, stop and report `Status: Blocked` with that permission blocker.
 
 #### GitHub Review Merges
 
 - Merge with `gh pr merge <number-or-branch> --repo "<repo>" --squash --delete-branch`.
+- When the approved merge mode is `admin-bypass`, merge with `gh pr merge <number-or-branch> --repo "<repo>" --squash --delete-branch --admin`.
 
 #### GitLab Review Merges
 
 - Merge with `glab mr merge <id-or-branch> -R "<repo>" --squash --remove-source-branch --yes`.
+- If the approved merge mode is `admin-bypass`, stop and report `Status: Blocked` because the provider CLI does not expose a documented elevated merge flag for this workflow.
 
-If checks, approvals, merge queues, branch protections, conflicts, or permissions block the merge, stop and report the blocking condition. Do not bypass protections with elevated flags.
+If conflicts or permissions block the merge, stop and report the blocking condition. Never infer `admin-bypass` from the provider response alone.
 
 ### Step 6: Publish Releases
 
@@ -167,7 +177,9 @@ Artifact: PR|MR|Release
 Branch: <branch>
 Base: <base>
 Tag: <tag>
+Merge Mode: <standard|admin-bypass>
 Status: Existing|Created|Merged|Blocked
+Blocker: <reason>
 Identifier: <number-or-id>
 URL: <url>
 ```
@@ -181,4 +193,4 @@ URL: <url>
 - Never push code as part of review creation.
 - Never let provider release commands create tags implicitly from the default branch.
 - Never guess the base branch when the default branch cannot be resolved cleanly.
-- Never merge with admin or force-style bypasses by default.
+- Never infer `admin-bypass`; require explicit caller approval and block when the provider does not support the approved merge mode.
