@@ -1,6 +1,6 @@
 ---
 name: prompt-engineering
-description: "Write prompts, reusable instruction files, and portable SKILL.md files with clear trigger boundaries, semantic markdown structure, strong information ordering, concise examples, protocols, standards, constraints, and progressive disclosure. Use when creating or editing prompts, agent instructions, command docs, rules, skills, AGENTS.md, or similar instruction artifacts."
+description: "Write prompts, reusable instruction files, and portable SKILL.md files with agent-agnostic guidance, clear trigger boundaries, semantic markdown structure, strong information ordering, concise examples, protocols, standards, constraints, progressive disclosure, and unwrapped Markdown prose. Use when creating or editing prompts, agent instructions, command docs, rules, skills, AGENTS.md, or similar instruction artifacts."
 ---
 
 # Prompt Engineering Rules
@@ -13,6 +13,8 @@ This skill replaces the old `prompting` and `skill` skills. Use it as the single
 >
 > - **Treat prompts and skills as the same discipline**: Both are instruction artifacts. Skills add trigger logic, reuse, and optional supporting files.
 > - **Optimize for portability first**: Write the core guidance so it still makes sense without vendor-specific features.
+> - **Keep the core AI agent agnostic**: Write prompts so they carry across Codex, Claude, Gemini, and future agents without rewriting the core instructions.
+> - **Do not hard-wrap Markdown prompt prose**: Keep paragraphs and list items on single lines unless Markdown syntax requires a structural line break.
 > - **The trigger contract matters**: Reusable instructions should make their scope obvious. Skills must state what they do, when they should trigger, and when they should not.
 > - **Keep the core small and high-value**: Put only always-needed guidance in the main file. Move deep references, large examples, and deterministic helpers to supporting files.
 
@@ -62,6 +64,8 @@ Portable skills assume only the shared Agent Skills model:
 
 Write the main skill so it still makes sense if a client does not support slash commands, hooks, subagents, model selectors, or runtime variables.
 
+Portable prompts and skills should also read naturally if they are moved between agent products. The core instructions should address the `agent`, `model`, or `client` generically rather than assuming a branded assistant identity.
+
 ### Portable Skill Structure
 
 ```text
@@ -79,14 +83,14 @@ skill-name/
 
 These fields come from the shared Agent Skills specification:
 
-| Field | Required | Notes |
-|-------|----------|-------|
-| `name` | Yes | Lowercase letters, numbers, and hyphens only; max 64 chars; must match directory name |
-| `description` | Yes | Max 1024 chars; explain what the skill does and when to use it |
-| `license` | No | License name or bundled license file |
-| `compatibility` | No | Environment requirements such as tools, packages, or network access |
-| `metadata` | No | Additional string key-value data |
-| `allowed-tools` | No | Experimental; support varies by client |
+| Field           | Required | Notes                                                                                 |
+| --------------- | -------- | ------------------------------------------------------------------------------------- |
+| `name`          | Yes      | Lowercase letters, numbers, and hyphens only; max 64 chars; must match directory name |
+| `description`   | Yes      | Max 1024 chars; explain what the skill does and when to use it                        |
+| `license`       | No       | License name or bundled license file                                                  |
+| `compatibility` | No       | Environment requirements such as tools, packages, or network access                   |
+| `metadata`      | No       | Additional string key-value data                                                      |
+| `allowed-tools` | No       | Experimental; support varies by client                                                |
 
 ## Instructions
 
@@ -157,6 +161,75 @@ Good pattern:
 
 ```text
 Use when the user wants to [goal], especially for [common cases]. Do not use for [nearby but different tasks].
+```
+
+### Write Agent-Agnostic Core Instructions
+
+Portable prompts should describe capabilities and workflow in a way that survives copy-paste across agent products.
+
+Prefer:
+
+- `agent`, `model`, or `client` over branded assistant names
+- Capability-based language like `tool access`, `terminal access`, `file editing`, or `web access`
+- Optional compatibility notes only when a workflow truly depends on one client
+
+Avoid:
+
+- Writing the core prompt as if it belongs to Codex, Claude, Gemini, or any other named agent
+- Depending on product-specific UI terms when a capability-based phrase would work
+- Forcing users to rewrite the prompt just to move it into another agent product
+
+Weak:
+
+```text
+Codex should inspect the repo and then Claude should rewrite the prompt for Gemini.
+```
+
+Better:
+
+```text
+Have the agent inspect the repository, then revise the prompt so it remains effective across agent products. If a client-specific adaptation is required, isolate it in a clearly labeled compatibility note.
+```
+
+Weak:
+
+```text
+Use Codex slash commands to gather context before you answer.
+```
+
+Better:
+
+```text
+Gather the required context using the client's available tools before answering. If the target client exposes special commands, document them in an optional client-specific addendum rather than the portable core.
+```
+
+### Do Not Hard-Wrap Markdown Prompt Files
+
+Markdown prompt artifacts should keep prose unwrapped.
+
+Prefer:
+
+- One line per paragraph
+- One line per list item unless the list item contains a nested Markdown structure
+- Line breaks for structure, such as headings, lists, blockquotes, tables, and fenced code blocks
+
+Avoid:
+
+- Manually wrapping prose to satisfy line-length rules
+- Reflowing prompt text into narrow columns
+- Introducing noisy diffs by rewrapping unchanged Markdown prose
+
+Weak:
+
+```markdown
+This prompt should be portable across agent products and should remain easy to
+edit when a collaborator updates one sentence in the middle of the paragraph.
+```
+
+Better:
+
+```markdown
+This prompt should be portable across agent products and should remain easy to edit when a collaborator updates one sentence in the middle of the paragraph.
 ```
 
 ### Use Examples Only When They Add Real Value
@@ -344,6 +417,8 @@ Assets should contain templates, schemas, examples, or static resources that imp
 Keep the main guidance portable across agent products.
 
 - Put shared guidance in standard frontmatter and Markdown content
+- Write the portable core so it still works across Codex, Claude, Gemini, and future agent products
+- Describe capabilities generically before naming any client-specific feature
 - Treat client-specific fields and behaviors as optional extensions
 - Only use runtime variables documented by the target client
 - Do not assume one client's slash commands, hooks, subagents, or model selectors exist everywhere
@@ -440,6 +515,8 @@ If the artifact fails:
 - Use semantic Markdown structure with consistent section names
 - Put supporting context before the task that depends on it
 - Keep reusable artifacts concise and procedural
+- Write the portable core in AI agent agnostic language
+- Keep Markdown prompt prose unwrapped unless syntax requires a structural line break
 - Use examples only when they materially improve accuracy
 - Define output shape explicitly when format matters
 - Keep one skill focused on one coherent capability or workflow
@@ -456,8 +533,11 @@ If the artifact fails:
 - Never write vague skill descriptions like "helps with tasks"
 - Never bury core instructions under long theory sections
 - Never add many equal options when one default path is better
+- Never write the default prompt as though it belongs to Codex, Claude, Gemini, or any other branded agent
 - Never assume one product's extensions are universal
 - Never make client-specific features the default shape of a portable skill
+- Never require product-specific wording in the portable core when capability-based language would work
+- Never hard-wrap Markdown prompt prose to satisfy line-length rules
 - Never rely on undocumented runtime substitutions
 - Never bury trigger criteria only in the body; keep them in `description`
 - Never add supporting files that are not referenced from the main artifact
